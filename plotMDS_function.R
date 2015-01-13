@@ -12,7 +12,7 @@
 #http://www.statmethods.net/advstats/mds.html
 #http://gastonsanchez.com/blog/how-to/2013/01/23/MDS-in-R.html
 
-plotMDS <- function(IDs, x.diss, clusLabs){
+plotMDS <- function(IDs, x.diss, clusLabs, medoidIDs=NA){
   require(stats)
   require(ggplot2)
   
@@ -26,10 +26,21 @@ plotMDS <- function(IDs, x.diss, clusLabs){
   mdsDF  <- data.frame(uniqueID=IDs, cluster = factor(clusLabs), 
                        var1=mdsMat[,1], var2=mdsMat[,2])
   
-  plot   <- ggplot(data = mdsDF, aes(x=var1, y=var2, colour=cluster)) + 
-    geom_point(position="jitter") +
-    ggtitle("MDS 2D plot of dissimilarity matrix")
-  print(plot)
+  if(is.na(medoidIDs)){
+    plot   <- ggplot(data = mdsDF, aes(x=var1, y=var2, colour=cluster)) + 
+      geom_point(position="jitter") +
+      ggtitle("MDS 2D plot of dissimilarity matrix")
+    print(plot)
+  }else{
+    mdsDFmed <- mdsDF[mdsDF$uniqueID %in% medoidIDs, ]
+    
+    plot   <- ggplot(data = mdsDF, aes(x=var1, y=var2, colour=cluster)) + 
+      geom_point(position="jitter") +
+      geom_point(data=mdsDFmed, size=6) +
+      ggtitle("MDS 2D plot of dissimilarity matrix")
+    print(plot)
+  }
 }
+
 
 # Alternative is PCA or ..
